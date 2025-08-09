@@ -13,26 +13,30 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Authenticate to Google Cloud
+    # Step 1: Authenticate to Google Cloud using service account key
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-    # Install gcloud CLI
+    # Step 2: Install gcloud CLI
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: practice-project-437604
         version: latest
 
-    # Build the Docker image
+    # Step 3: Configure Docker to authenticate with Artifact Registry
+    - name: Configure Docker for Artifact Registry
+      run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+    # Step 4: Build the Docker image
     - name: Build Docker image
       run: |
-        IMAGE_TAG="us-docker.pkg.dev/practice-project-437604/management-api-repo/management-api:$(date +%s)"
+        IMAGE_TAG="central1-docker.pkg.dev/practice-project-437604/management-api-repo/management-api:latest"
         docker build . --file Dockerfile --tag $IMAGE_TAG
         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-    # Push the Docker image
+    # Step 5: Push the Docker image
     - name: Push Docker image
       run: docker push $IMAGE_TAG
