@@ -29,10 +29,9 @@ jobs:
     # Step 3: Build the Docker image with timestamp tag
     - name: Build Docker image
       run: |
-        IMAGE_TAG="gcr.io/practice-project-437604/management-api"
-        docker build . --file Dockerfile --tag $IMAGE_TAG
-        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+        docker build . --file Dockerfile -t gcr.io/practice-project-437604/management-api
+        echo "IMAGE_TAG=gcr.io/practice-project-437604/management-api" >> $GITHUB_ENV
 
     # Step 4: Push Docker image to GCR
     - name: Push Docker image
-      run: docker push $IMAGE_TAG
+      run: docker push gcr.io/practice-project-437604/management-api
