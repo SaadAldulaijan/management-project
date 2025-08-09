@@ -7,12 +7,28 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+
+    # Step 1: Authenticate with Google Cloud
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: practice-project-437604
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    # Step 2: Build the Docker image
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag management-api:$(date +%s)
+      run: |
+        IMAGE_TAG="gcr.io/practice-project-437604/management-api:$(date +%s)"
+        docker build . --file Dockerfile --tag $IMAGE_TAG
+        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+    # Step 3: Push the Docker image to Google Container Registry
+    - name: Push to Google Container Registry
+      run: |
+        docker push $IMAGE_TAG
