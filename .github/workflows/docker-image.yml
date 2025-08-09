@@ -13,26 +13,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Step 1: Authenticate to GCP
+    # Authenticate to Google Cloud
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-    # Step 2: Set up Cloud SDK
+    # Install gcloud CLI
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: practice-project-437604
-        version: 'latest'
+        version: latest
 
-    # Step 3: Build the Docker image with timestamp tag
+    # Build the Docker image
     - name: Build Docker image
       run: |
         IMAGE_TAG="us-docker.pkg.dev/practice-project-437604/management-api-repo/management-api:$(date +%s)"
         docker build . --file Dockerfile --tag $IMAGE_TAG
         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-    # Step 4: Push Docker image to GCR
+    # Push the Docker image
     - name: Push Docker image
       run: docker push $IMAGE_TAG
