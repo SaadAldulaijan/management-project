@@ -31,9 +31,10 @@ jobs:
 
     - name: Authenticate Docker to GCR
       run: |
-        echo ${{ secrets.GCP_SA_KEY }} > "${HOME}/gcloud-key.json"
-        gcloud auth activate-service-account --key-file="${HOME}/gcloud-key.json"
+        echo "${{ secrets.GCP_SA_KEY }}" > $HOME/gcloud-key.json
+        gcloud auth activate-service-account --key-file=$HOME/gcloud-key.json
         gcloud auth configure-docker --quiet
+
 
     # Step 3: Push the Docker image to Google Container Registry
     - name: Push to Google Container Registry
